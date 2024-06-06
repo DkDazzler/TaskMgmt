@@ -1,0 +1,741 @@
+{
+    "components": {
+        "save-task": {
+            "summary": "Save task API.",
+            "description": "Save new task",
+            "tags": [
+                "Task"
+            ],
+            "consumes": [
+                "application/json"
+            ],
+            "produces": [
+                "application/json"
+            ],
+            "requestBody": {
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "title","description","status"
+                            ],
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Enter title (Max-60).",
+                                    "example": "Create CRUD Operation"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Enter description (Max-100).",
+                                    "example": "Create CRUD Operation using Node, Express, MYSQL"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "pending","in-progress","completed"
+                                    ],
+                                    "description": "Select task status"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "When task saved successfully.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "data": {
+                                        "type": "object",
+                                        "example": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Validation errors.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 100
+                                            },
+                                            "errors": {
+                                                "type": "array",
+                                                "example": [
+                                                    "device id is missing.",
+                                                    "device type is missing.",
+                                                    "device token is missing.",
+                                                    "api access key is missing."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Validation errors.",
+                                        "type": "object",
+                                        "properties": {
+                                            "code":{
+                                                "type": "integer",
+                                                "example": 105
+                                            },
+                                            "message":{
+                                                "type":"string",
+                                                "example":"must have required property 'title'"
+                                            },
+                                            "data": {
+                                                "type": "object",
+                                                "example": {
+                                                    "fields": {
+                                                        "": [
+                                                            "Must have required property 'title'"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Invalid Api Key or token",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "oneOf": [
+                            {
+                              "description": "Invalid Api Key",
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "integer",
+                                  "example": 102
+                                }
+                              }
+                            },
+                            {
+                              "description": "Invalid token",
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "integer",
+                                  "example": 104
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                },
+                "403": {
+                    "description": "A token is required for authentication",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer",
+                              "example": 103
+                            }
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        },
+        "task-list": {
+            "summary": "Task list API.",
+            "description": "This API is used to display task list.",
+            "tags": ["Task"],
+            "produces": ["application/json"],
+            "parameters": [
+              {
+                "in": "query",
+                "name": "pageNo",
+                "description": "page no",
+                "schema": {
+                "type": "integer"
+                }
+              },
+              {
+                "in": "query",
+                "name": "search",
+                "description": "Search By: (title, description, status)",
+                "schema": {
+                    "type": "string"
+                }
+              }
+            ],
+            "responses": {
+                "200": {
+                    "description": "When task list displayed successfully.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 200
+                                            },
+                                            "data": {
+                                                "type": "object",
+                                                "example": {
+                                                    "taskList": [
+                                                        {
+                                                            "id": "lejRej",
+                                                            "title": "Create CRU",
+                                                            "description": "Create crud for task mamangementTTT",
+                                                            "status": "completed"
+                                                        }
+                                                    ],
+                                                    "loadMore": false,
+                                                    "count": 1
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 200
+                                            },
+                                            "data": {
+                                                "type": "object",
+                                                "example": {
+                                                    "taskList": [],
+                                                    "loadMore": false,
+                                                    "count": 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Validation errors.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 100
+                                            },
+                                            "errors": {
+                                                "type": "array",
+                                                "example": [
+                                                    "device id is missing.",
+                                                    "device type is missing.",
+                                                    "device token is missing.",
+                                                    "api access key is missing."
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Invalid Api Key or token",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "description": "Invalid Api Key",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 102
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Invalid token",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 104
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "403": {
+                    "description": "A token is required for authentication",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 103
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "get-task": {
+            "summary": "Get a task API.",
+            "description": "This API used to display a task.",
+            "tags": [
+              "Task"
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "description": "id (encrypted)",
+                "schema": {
+                  "type": "string",
+                  "example": "lejRej"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "When task displayed successfully.",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "data": {
+                          "type": "object",
+                          "example": {
+                            "title": "Create CRU",
+                            "description": "Create crud for task mamangementTTT",
+                            "status": "completed",
+                            "createdAt": "2024-06-06T15:54:06.000Z",
+                            "updatedAt": null
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Validation errors.",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "oneOf": [
+                        {
+                          "properties": {
+                            "code": {
+                              "type": "integer",
+                              "example": 100
+                            },
+                            "errors": {
+                              "type": "array",
+                              "example": [
+                                "device id is missing.",
+                                "device type is missing.",
+                                "device token is missing.",
+                                "api access key is missing."
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "description": "Invalid task id.",
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer",
+                              "example": 114
+                            },
+                            "data": {}
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "Invalid Api Key",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "oneOf": [
+                        {
+                          "description": "Invalid Api Key",
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer",
+                              "example": 102
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+        },
+        "update-task": {
+            "summary": "Update task API.",
+            "description": "This API is used to update task.",
+            "tags": ["Task"],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "description": "id (encrypted)",
+                  "schema": {
+                    "type": "string",
+                    "example": "lejRej"
+                  }
+                }
+            ],
+            "requestBody": {
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "title","description","status"
+                            ],
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Enter title (Max-60).",
+                                    "example": "Create CRUD Operation"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Enter description (Max-100).",
+                                    "example": "Create CRUD Operation using Node, Express, MYSQL"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "pending","in-progress","completed"
+                                    ],
+                                    "description": "Select task status"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": true
+            },
+            "responses": {
+                "200": {
+                    "description": "When task updated successfully.",
+                    "content": {
+                        "application/json": {
+                            "schema": {    
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "data": {
+                                        "type": "object",
+                                        "example": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Validation errors.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 100
+                                            },
+                                            "errors": {
+                                                "type": "array",
+                                                "example": [
+                                                    "device id is missing.",
+                                                    "device type is missing.",
+                                                    "device token is missing.",
+                                                    "api access key is missing."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Invalid task id.",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 114
+                                            },
+                                            "data": {}
+                                        }
+                                    },
+                                    {
+                                        "description": "Validation errors.",
+                                        "type": "object",
+                                        "properties": {
+                                            "code":{
+                                                "type": "integer",
+                                                "example": 105
+                                            },
+                                            "message":{
+                                                "type":"string",
+                                                "example":"must have required property 'title'"
+                                            },
+                                            "data": {
+                                                "type": "object",
+                                                "example": {
+                                                    "fields": {
+                                                        "": [
+                                                            "Must have required property 'title'"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Invalid Api Key or token",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "description": "Invalid Api Key",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 102
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Invalid token",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 104
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "403": {
+                    "description": "A token is required for authentication",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 103
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "delete-task": {
+            "summary": "Delete task API.",
+            "description": "This API is used to delete task.",
+            "tags": ["Task"],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "description": "id (encrypted)",
+                  "schema": {
+                    "type": "string",
+                    "example": "lejRej"
+                  }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "When task deleted successfully.",
+                    "content": {
+                        "application/json": {
+                            "schema": {    
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "data": {
+                                        "type": "object",
+                                        "example": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Validation errors.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 100
+                                            },
+                                            "errors": {
+                                                "type": "array",
+                                                "example": [
+                                                    "device id is missing.",
+                                                    "device type is missing.",
+                                                    "device token is missing.",
+                                                    "api access key is missing."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Invalid task id.",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 114
+                                            },
+                                            "data": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Invalid Api Key or token",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "description": "Invalid Api Key",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 102
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "description": "Invalid token",
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "example": 104
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "403": {
+                    "description": "A token is required for authentication",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "example": 103
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

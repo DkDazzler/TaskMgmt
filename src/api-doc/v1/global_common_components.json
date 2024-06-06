@@ -1,0 +1,12 @@
+{
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "This is an auth module."
+    },
+    {
+      "name": "Task",
+      "description": "This is task module."
+    }
+  ]
+}
